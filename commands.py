@@ -67,6 +67,7 @@ def strings(args):
     if (validSession() is False):
         return
     strings = session.get_session().get_strings()
+    #use ecma regex
     if(len(args) > 0):
         regex = re.compile(args[0])
     else:
