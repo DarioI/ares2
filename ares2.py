@@ -8,6 +8,7 @@ from commands import *
 
 built_in_cmds = {}
 
+
 def tokenize(string):
     return shlex.split(string)
 
@@ -61,7 +62,8 @@ def display_cmd_prompt():
         base_dir = '~'
 
     sys.stdout.write(utils.format_command_prompt("[%s@%s " % (user,
-                "ares"))+format_directory_string(" %s]" % base_dir)+" $ ")
+                                                              "ares")) + format_directory_string(
+        " %s]" % base_dir) + " $ ")
     sys.stdout.flush()
 
 
@@ -99,13 +101,14 @@ def init():
     register_command("export", export)
     register_command("getenv", getenv)
     register_command("history", history)
-    register_command("setapk",setapk)
+    register_command("setapk", setapk)
     register_command("strings", strings)
 
 
 def main():
     init()
     shell_loop()
+
 
 if __name__ == "__main__":
     main()

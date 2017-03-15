@@ -4,6 +4,8 @@ import sys
 import session
 import re
 import apkutils
+import constants
+
 
 def cd(args):
     if len(args) > 0:
@@ -12,8 +14,10 @@ def cd(args):
         os.chdir(os.getenv('HOME'))
     return utils.SHELL_STATUS_RUN
 
+
 def exit(args):
     return utils.SHELL_STATUS_STOP
+
 
 def export(args):
     if len(args) > 0:
@@ -21,10 +25,12 @@ def export(args):
         os.environ[var[0]] = var[1]
     return utils.SHELL_STATUS_RUN
 
+
 def getenv(args):
     if len(args) > 0:
         print(os.getenv(args[0]))
     return utils.SHELL_STATUS_RUN
+
 
 def history(args):
     with open(utils.HISTORY_PATH, 'r') as history_file:
@@ -44,8 +50,8 @@ def history(args):
                 sys.stdout.write('%d %s' % (line_num + 1, line))
         sys.stdout.flush()
 
-
     return utils.SHELL_STATUS_RUN
+
 
 def setapk(args):
     if len(args) > 0:
@@ -60,19 +66,30 @@ def setapk(args):
             sys.stderr.flush()
     return utils.SHELL_STATUS_RUN
 
+
 def validSession():
-    return session.get_session()
+    return session.get_session().is_valid_session()
+
 
 def strings(args):
-    if (validSession() is False):
+    if validSession() is False:
         return
-    strings = session.get_session().get_strings()
-    #use ecma regex
-    if(len(args) > 0):
-        regex = re.compile(args[0])
+
+    stringDict = session.get_session().get_strings()
+
+    # use ecma regex
+    if len(args) > 0:
+        filter = args[0]
+        if constants.REGEXES[filter] is None:
+            regex = re.compile(args[0])
+        else:
+            regex = re.compile(constants.REGEXES[filter])
+
     else:
         regex = re.compile(".*")
-    for string in strings:
-        if regex.match(string):
-            print string
+    for key, value in stringDict.iteritems():
+        decoded_string, linenumber, classname = utils.decode_string(key)
+        if regex.match(decoded_string):
+            print "%s :: %s @ %s" % (decoded_string, classname, linenumber)
 
+    return utils.SHELL_STATUS_RUN
